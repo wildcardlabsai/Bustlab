@@ -1,0 +1,138 @@
+# BUSTLAB — Official Website
+
+Brand website, product showcase and content hub for **BUSTLAB**, premium collectible busts and sculptures **supplied unpainted and ready to paint**.
+
+This is **not** an ecommerce site. There is no cart, checkout, payments, stock or customer accounts. Purchase buttons link out to the BUSTLAB **Shopify** and **Etsy** stores.
+
+- **Stack:** React 19 · TypeScript · Vite · Tailwind CSS 4 · React Router 7 · Supabase (Postgres, Auth, Storage) · Lucide icons
+- **Public pages:** `/`, `/collections`, `/collections/:slug`, `/products/:slug`, `/gallery`, `/ready-to-paint`, `/about`, `/contact`
+- **Admin:** `/admin` (overview), `/admin/products`, `/admin/collections`, `/admin/gallery`, `/admin/messages`, `/admin/settings`, `/admin/login`
+
+---
+
+## Quick start (local preview)
+
+```bash
+npm install
+npm run dev          # http://localhost:5173
+```
+
+Without Supabase credentials the public site runs in **preview mode**, showing the bundled starter content read-only. The admin shows setup instructions, and the contact form says plainly that it isn't connected yet. It never pretends a message was sent.
+
+## Connect Supabase
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. Apply the database migrations and starter content:
+   ```bash
+   npx supabase login
+   npx supabase link --project-ref <your-project-ref>
+   npx supabase db push             # applies supabase/migrations/*
+   psql "<connection string>" -f supabase/seed.sql   # optional starter content
+   ```
+   (Or paste each file from `supabase/migrations/` and then `supabase/seed.sql` into the SQL editor, in order.)
+3. Copy `.env.example` to `.env` and fill in:
+   ```
+   VITE_SUPABASE_URL=https://<ref>.supabase.co
+   VITE_SUPABASE_ANON_KEY=<anon public key>
+   VITE_SITE_URL=https://www.your-domain.com
+   ```
+   Only the **anon** key belongs in the frontend. **Never** put the service-role key in any `VITE_` variable.
+4. In **Authentication → Providers → Email**, turn off "Allow new users to sign up". Admins are invited, never self-registered.
+
+### Create an administrator
+
+1. **Authentication → Users → Add user**: create the user with an email and a strong password.
+2. In the SQL editor, run:
+   ```sql
+   update public.profiles set role = 'admin' where email = 'you@example.com';
+   ```
+3. Sign in at `/admin/login`.
+
+New auth users always start as `role = 'user'`, which gives no content access. Only an existing admin (or the SQL editor) can promote someone.
+
+## Security model
+
+All protection lives in the database, not the browser:
+
+| Data | Visitors (anon) | Signed-in non-admin | Admin |
+|---|---|---|---|
+| Products / gallery | read **published** only | read published only | full CRUD, sees drafts |
+| Collections | read **active** only | read active only | full CRUD |
+| Site settings | read | read | update |
+| Contact messages | **insert only** (4 columns), cannot read | cannot read | read / update / delete |
+| Storage `media` bucket | public file URLs | no upload | upload / replace / delete |
+
+- RLS policies use the `public.is_admin()` security-definer function.
+- CHECK constraints enforce URL formats (only `http(s)`, so no `javascript:` links), slugs, text lengths and email formats.
+- Contact messages are rate-limited in the database (3 per address per hour, 30 site-wide per 10 minutes). The form also has a honeypot field and a minimum-fill-time check.
+- A trigger blocks non-admins from changing roles.
+- The `/admin` route guard only improves the user experience. Without an admin JWT the database refuses every write, and every read of drafts or messages.
+
+## Managing content (no developer needed)
+
+- **Products:** name, slug, descriptions, collection, main and extra images (drag and drop, with progress; images are resized and converted to WebP in the browser), dimensions, material and finish, ready-to-paint flag, featured, published, display order, and per-product Shopify/Etsy URLs.
+- **Collections:** create, edit, cover image, reorder, activate/deactivate, delete (products are kept, as uncategorised).
+- **Gallery:** multi-upload, captions, alt text, category, **painted-example** flag (painted images are always labelled on the site), visibility, ordering.
+- **Messages:** read, mark read/unread, archive, delete, reply by email.
+- **Website settings:** Shopify and Etsy store URLs, Instagram, TikTok, Facebook, YouTube, contact email, announcement bar, logo upload, homepage hero image, footer tagline. Changes go live immediately.
+
+**Store links:** a product's own Shopify/Etsy URL is used when set. Otherwise its buttons fall back to the global store URL. If neither exists, no button is shown. All external links open in a new tab with `rel="noopener noreferrer"`.
+
+## Imagery
+
+`public/images/` holds **original placeholder renders**: procedurally modelled busts in a neutral unpainted finish, shot in a dark studio with purple lighting. They are generated by `npm run render:placeholders` (three.js in headless Chromium). The painted versions are clearly labelled inspiration examples. Replace any of them through the admin with real product photography.
+
+**Logo:** no logo file was supplied, so `src/components/brand/Logo.tsx` renders a wordmark from the brand description (bold italic **BUST** in silver, **LAB** in neon purple, angular purple brackets). Upload the official logo in **Website Settings** and it replaces this everywhere.
+
+## Scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Type-check, build to `dist/`, generate `dist/sitemap.xml` and `dist/robots.txt` |
+| `npm run lint` | ESLint |
+| `npm test` | Unit and component tests (Vitest) |
+| `npm run test:db` | Applies all migrations and the seed to a throwaway database, then runs the RLS/constraint suite (`supabase/tests/rls_test.sql`). Needs a plain PostgreSQL 15+ server: `TEST_DATABASE_URL=postgres://postgres@localhost:5432/postgres` |
+| `npm run generate:seed` | Regenerates `supabase/seed.sql` from `src/data/demo.ts` |
+| `npm run render:placeholders` | Re-renders placeholder imagery |
+
+### End-to-end tests
+
+`tests/e2e/` contains a browser test suite (Playwright, 22 scenarios covering the public site and every admin flow). It runs against a **local test double** of the Supabase HTTP APIs (`tests/e2e/local-supabase.mjs`). Each request runs inside PostgreSQL as the caller's role with their JWT claims, so the real RLS policies are enforced.
+
+```bash
+TEST_DATABASE_URL=postgres://postgres@127.0.0.1:5432/postgres bash tests/e2e/setup-db.sh
+DATABASE_URL=postgres://postgres@127.0.0.1:5432/bustlab_e2e node tests/e2e/local-supabase.mjs &   # prints ANON_KEY
+VITE_SUPABASE_URL=http://127.0.0.1:54321 VITE_SUPABASE_ANON_KEY=<ANON_KEY> npx vite --port 5174 &
+DATABASE_URL=postgres://postgres@127.0.0.1:5432/bustlab_e2e node tests/e2e/run.mjs
+```
+
+The test double is for testing only. Production uses real Supabase.
+
+## Deployment
+
+The build is a static SPA in `dist/`. Any static host works if unknown paths are rewritten to `index.html`:
+- **Vercel:** `vercel.json` is included (SPA rewrites, caching and security headers).
+- **Netlify / Cloudflare Pages:** `public/_redirects` is included.
+
+Set the `VITE_*` environment variables in the host's dashboard. Rebuild after content changes if you want the sitemap refreshed; page content itself updates live from Supabase.
+
+Also add your production URL to **Supabase → Authentication → URL Configuration** (Site URL and redirect URLs) so password-reset links work.
+
+## Project structure
+
+```
+src/
+  admin/            # admin dashboard (lazy-loaded; never downloaded by visitors)
+  components/       # public UI: layout, home sections, product, gallery, seo, ui primitives
+  context/          # SettingsContext (site settings), AuthContext (Supabase auth + admin check)
+  data/demo.ts      # starter content (preview mode + seed generation)
+  lib/              # env, supabase client, URL/slug/image/validation helpers
+  pages/            # public routes
+  services/         # api.ts (public reads + contact), admin.ts (CMS writes + uploads)
+  styles/index.css  # design tokens (BUSTLAB palette, typography) + Tailwind
+supabase/
+  migrations/       # schema, RLS, storage bucket and policies
+  seed.sql          # starter content
+  tests/            # RLS test suite (+ local-only Supabase base stub)
+```
