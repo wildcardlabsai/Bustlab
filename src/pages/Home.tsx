@@ -18,7 +18,7 @@ export default function Home() {
           '@type': 'Organization',
           name: 'BUSTLAB',
           url: env.siteUrl,
-          logo: `${env.siteUrl}/favicon.svg`,
+          logo: `${env.siteUrl}/images/brand/bustlab-logo.png`,
           description: DEFAULT_DESCRIPTION,
         }}
       />

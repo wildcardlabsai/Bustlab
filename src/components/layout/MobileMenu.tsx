@@ -53,7 +53,7 @@ export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => vo
       >
         <div className="pointer-events-none absolute -top-20 right-0 h-64 w-64 rounded-full bg-purple/25 blur-3xl" />
         <div className="relative flex h-[var(--header-h)] items-center justify-between px-5">
-          <Logo src={settings.logo_url} className="h-7" />
+          <Logo src={settings.logo_url} className="h-10" />
           <button onClick={onClose} className="rounded-lg p-2 text-silver hover:bg-white/5 hover:text-white" aria-label="Close menu">
             <X className="h-6 w-6" />
           </button>

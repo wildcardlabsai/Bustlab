@@ -129,11 +129,11 @@ export default function Settings() {
               <div>
                 <p className="label">Website logo</p>
                 <div className="mb-3 flex items-center gap-3 rounded-lg bg-bg-2 p-4">
-                  <Logo src={form.logo_url} className="h-9" />
-                  <span className="text-xs text-muted">{form.logo_url ? 'Uploaded logo' : 'Built-in BUSTLAB wordmark'}</span>
+                  <Logo src={form.logo_url} className="h-12" />
+                  <span className="text-xs text-muted">{form.logo_url ? 'Uploaded logo' : 'Official BUSTLAB logo (default)'}</span>
                 </div>
                 <ImageUploadField id="s-logo" label="Website logo" value={form.logo_url} onChange={(v) => set('logo_url', v)} folder="branding" aspect="aspect-[4/1] object-contain p-4" />
-                <p className="mt-1.5 text-xs text-muted">Upload a transparent PNG or SVG of the official logo. Remove it to use the built-in wordmark.</p>
+                <p className="mt-1.5 text-xs text-muted">Upload a transparent PNG or SVG of the official logo. Remove it to use the official BUSTLAB logo.</p>
               </div>
               <div>
                 <p className="label">Homepage hero image</p>

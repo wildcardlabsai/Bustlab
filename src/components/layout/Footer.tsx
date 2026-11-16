@@ -18,7 +18,7 @@ export function Footer() {
       <div className="pointer-events-none absolute -bottom-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-purple/10 blur-3xl" aria-hidden />
       <div className="container-x relative grid gap-12 py-16 md:grid-cols-12">
         <div className="md:col-span-5">
-          <Logo src={settings.logo_url} className="h-9" />
+          <Logo src={settings.logo_url} className="h-14" />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted">
             {settings.footer_tagline || 'Premium collectible busts and sculptures, supplied ready to paint.'}
           </p>

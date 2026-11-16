@@ -30,7 +30,7 @@ export function Header() {
       >
         <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-6">
           <Link to="/" className="shrink-0" aria-label="BUSTLAB home">
-            <Logo src={settings.logo_url} className="h-7 sm:h-9" />
+            <Logo src={settings.logo_url} className="h-10 sm:h-12" />
           </Link>
           <nav aria-label="Main" className="hidden lg:block">
             <ul className="flex items-center gap-1">

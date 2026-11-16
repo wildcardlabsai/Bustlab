@@ -88,7 +88,7 @@ export default function Login() {
       <Seo title="Admin sign in" noindex />
       <div className="pointer-events-none absolute left-1/2 top-1/3 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-purple/20 blur-[140px]" aria-hidden />
       <div className="relative w-full max-w-sm">
-        <div className="mb-8 flex justify-center"><Logo className="h-10" /></div>
+        <div className="mb-8 flex justify-center"><Logo className="h-16" /></div>
         <form onSubmit={onSubmit} noValidate className="card space-y-5 p-7" aria-labelledby="login-title">
           <div className="flex items-center gap-2">
             <Lock className="h-4 w-4 text-purple-bright" aria-hidden />

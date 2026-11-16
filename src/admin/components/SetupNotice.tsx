@@ -6,7 +6,7 @@ export function SetupNotice() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg p-6">
       <div className="card max-w-lg p-8">
-        <Logo className="h-8" />
+        <Logo className="h-12" />
         <div className="mt-6 flex items-center gap-3">
           <Database className="h-6 w-6 text-purple-bright" aria-hidden />
           <h1 className="font-display text-xl font-bold text-white">Connect Supabase to use the admin</h1>

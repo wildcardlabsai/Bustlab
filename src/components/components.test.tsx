@@ -38,9 +38,9 @@ describe('ProductCard', () => {
 })
 
 describe('Logo', () => {
-  it('renders the built-in wordmark or an uploaded logo', () => {
+  it('renders the official logo by default, or an uploaded logo', () => {
     const { rerender } = render(<Logo />)
-    expect(screen.getByRole('img', { name: 'BUSTLAB' }).tagName.toLowerCase()).toBe('svg')
+    expect(screen.getByRole('img', { name: 'BUSTLAB' })).toHaveAttribute('src', '/images/brand/bustlab-logo-720.webp')
     rerender(<Logo src="https://cdn.example.com/logo.png" />)
     expect(screen.getByRole('img', { name: 'BUSTLAB' })).toHaveAttribute('src', 'https://cdn.example.com/logo.png')
   })

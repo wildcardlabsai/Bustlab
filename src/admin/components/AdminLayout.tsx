@@ -22,7 +22,7 @@ export function AdminLayout() {
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center justify-between px-5">
-        <Link to="/admin" onClick={() => setOpen(false)} aria-label="Admin overview"><Logo className="h-7" /></Link>
+        <Link to="/admin" onClick={() => setOpen(false)} aria-label="Admin overview"><Logo className="h-10" /></Link>
         <button className="rounded-lg p-1.5 text-muted hover:text-white lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X className="h-5 w-5" /></button>
       </div>
       <p className="px-5 pb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-muted/70">Content</p>
@@ -62,7 +62,7 @@ export function AdminLayout() {
         <div className="lg:pl-64">
           <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-bg/85 px-4 backdrop-blur-xl lg:hidden">
             <button onClick={() => setOpen(true)} className="rounded-lg p-2 text-silver hover:bg-white/5" aria-label="Open navigation"><Menu className="h-5 w-5" /></button>
-            <Logo className="h-6" />
+            <Logo className="h-8" />
             <span className="ml-auto rounded-full bg-purple/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#d9a3ff]">Admin</span>
           </header>
           <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
